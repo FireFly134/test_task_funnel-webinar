@@ -1,0 +1,26 @@
+version: "3.3"
+
+services:
+  postgres-db:
+    image: postgres
+    container_name: postgres
+    env_file:
+      - .env
+    volumes:
+        - postgresql-data:/var/lib/postgresql/data
+    ports:
+        - "5432:5432"
+  user-bot:
+    build:
+      context: .
+    volumes:
+      - .:/usr/local/app
+    restart: unless-stopped
+    env_file:
+      - .env
+    command: sh -c "./migrate.sh"
+
+volumes:
+    cache:
+      driver: local
+    postgresql-data:
