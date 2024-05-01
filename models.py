@@ -16,13 +16,7 @@ Base = declarative_base()
 class BaseModel(Base):
     __abstract__ = True
 
-    id = Column(
-        Integer,
-        nullable=False,
-        unique=True,
-        primary_key=True,
-        autoincrement=True,
-    )
+    id = Column(Integer, nullable=False, unique=True, primary_key=True)
     created_at = Column(DateTime, default=func.now())
     status_updated_at = Column(
         DateTime, default=func.now(), onupdate=func.now()
@@ -32,7 +26,6 @@ class BaseModel(Base):
 
 class User(BaseModel):
     __tablename__ = "users_test"
-    user_id = Column(String, default="0")
     next_time_msg = Column(DateTime, default=func.now() + timedelta(days=1))
     count_msg = Column(Integer, default=1)
     stop_word = Column(Boolean, default=False)
