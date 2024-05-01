@@ -66,11 +66,9 @@ async def handle_message(client, message) -> None:
 async def step_1(user_id: int) -> None:
     """Шаг первый. Производим запись в БД т.к. пользователь новый.
     Через 6 минут отправляем сообщение, если не было стоп слова."""
-    next_time_msg = (
-        # datetime.now() + timedelta(minutes=6)
-        datetime.now()
-        + timedelta(minutes=1)
-    ).replace(second=0, microsecond=0)
+    next_time_msg = (datetime.now() + timedelta(minutes=6)).replace(
+        second=0, microsecond=0
+    )
     new_user = User(
         id=user_id,
         next_time_msg=next_time_msg,
@@ -83,11 +81,9 @@ async def step_1(user_id: int) -> None:
 async def step_2(user_id: int) -> None:
     """Шаг второй. Обновляем время статуса в БД, через 39 минут
     отправляем сообщение, если не было стоп слова или не введен 'триггер1'"""
-    next_time_msg = (
-        # datetime.now() + timedelta(minutes=39)
-        datetime.now()
-        + timedelta(minutes=5)
-    ).replace(second=0, microsecond=0)
+    next_time_msg = (datetime.now() + timedelta(minutes=39)).replace(
+        second=0, microsecond=0
+    )
     user = session.query(User).filter_by(id=user_id).first()
     user.status_updated_at = datetime.now()
     user.next_time_msg = next_time_msg
@@ -98,11 +94,9 @@ async def step_2(user_id: int) -> None:
 async def step_3(user_id: int) -> None:
     """Шаг второй. Обновляем время статуса в БД, через 1 день 2 часа
     отправляем сообщение, если не было стоп слова."""
-    next_time_msg = (
-        # datetime.now() + timedelta(days=1, hours=2)
-        datetime.now()
-        + timedelta(minutes=1)
-    ).replace(second=0, microsecond=0)
+    next_time_msg = (datetime.now() + timedelta(days=1, hours=2)).replace(
+        second=0, microsecond=0
+    )
     user = session.query(User).filter_by(id=user_id).first()
     user.status = "finished"
     user.status_updated_at = datetime.now()
@@ -131,23 +125,15 @@ async def check_status() -> None:
             for user in select_query:
                 try:
                     if user.count_msg == 1:
-                        await app.send_message(
-                            chat_id=user.id, text="Текст1"
-                        )
+                        await app.send_message(chat_id=user.id, text="Текст1")
                         await step_2(user.id)
                     elif user.count_msg == 2:
-                        await app.send_message(
-                            chat_id=user.id, text="Текст2"
-                        )
+                        await app.send_message(chat_id=user.id, text="Текст2")
                         await step_3(user.id)
                     elif user.count_msg == 3:
-                        await app.send_message(
-                            chat_id=user.id, text="Текст3"
-                        )
+                        await app.send_message(chat_id=user.id, text="Текст3")
                         user_update = (
-                            session.query(User)
-                            .filter_by(id=user.id)
-                            .first()
+                            session.query(User).filter_by(id=user.id).first()
                         )
                         user_update.status = "finished"
                         user_update.status_updated_at = datetime.now()
@@ -157,9 +143,7 @@ async def check_status() -> None:
 
                 except UserDeactivated:
                     user_update = (
-                        session.query(User)
-                        .filter_by(id=user.id)
-                        .first()
+                        session.query(User).filter_by(id=user.id).first()
                     )
                     user_update.status = "dead"
                     user_update.status_updated_at = datetime.now()
